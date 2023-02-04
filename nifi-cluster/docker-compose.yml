@@ -1,0 +1,156 @@
+version: "3"
+services:
+    # configuration manager for NiFi
+    zookeeper:
+        hostname: myzookeeper
+        container_name: zookeeper_container_persistent
+        image: 'bitnami/zookeeper:latest'  # latest image as of 2021-11-09.
+        restart: on-failure
+        environment:
+            - TZ=Asia/Singapore
+            - ALLOW_ANONYMOUS_LOGIN=yes
+        networks:
+            - my_persistent_network
+# version control for nifi flows
+    registry:
+        hostname: myregistry
+        container_name: registry_container_persistent
+        image: 'apache/nifi-registry:latest'  # latest image as of 2021-11-09.
+        restart: on-failure
+        ports:
+            - "18080:18080"
+        environment:
+            - TZ=Asia/Singapore
+            - LOG_LEVEL=INFO
+            - NIFI_REGISTRY_DB_DIR=/opt/nifi-registry/nifi-registry-current/database
+            - NIFI_REGISTRY_FLOW_PROVIDER=file
+            - NIFI_REGISTRY_FLOW_STORAGE_DIR=/opt/nifi-registry/nifi-registry-current/flow_storage
+        volumes:
+            - ./nifi_registry/database:/opt/nifi-registry/nifi-registry-current/database
+            - ./nifi_registry/flow_storage:/opt/nifi-registry/nifi-registry-current/flow_storage
+        networks:
+            - my_persistent_network
+# data extraction, transformation and load service
+    nifi1:
+        hostname: nifi1
+        container_name: nifi1
+        image: 'apache/nifi:latest'  # latest image as of 2021-11-09.
+        restart: on-failure
+        depends_on:
+            - zookeeper
+            - registry
+        ports:
+            - '8091:8080'
+        environment:
+            - NIFI_JVM_HEAP_INIT=1024m
+            - NIFI_JVM_HEAP_MAX=1024m
+            - TZ=Asia/Singapore
+            - NIFI_WEB_HTTP_PORT=8080
+            - NIFI.WEB.HTTP.HOST=localhost
+            - NIFI.CLUSTER.NODE.ADDRESS=localhost
+            - NIFI.REMOTE.INPUT.HOST=localhost
+            - NIFI_CLUSTER_IS_NODE=true
+            - NIFI_CLUSTER_NODE_PROTOCOL_PORT=8082
+            - NIFI_ZK_CONNECT_STRING=myzookeeper:2181
+            - NIFI_ELECTION_MAX_WAIT=30 sec
+            - NIFI_SENSITIVE_PROPS_KEY='12345678901234567890A'
+        healthcheck:
+            test: "${DOCKER_HEALTHCHECK_TEST:-curl localhost:8091/nifi/}"
+            interval: "60s"
+            timeout: "3s"
+            start_period: "5s"
+            retries: 5
+        volumes:
+            - ./nifi/nifi1/database_repository:/opt/nifi/nifi-current/database_repository
+            - ./nifi/nifi1/flowfile_repository:/opt/nifi/nifi-current/flowfile_repository
+            - ./nifi/nifi1/content_repository:/opt/nifi/nifi-current/content_repository
+            - ./nifi/nifi1/provenance_repository:/opt/nifi/nifi-current/provenance_repository
+            - ./nifi/nifi1/state:/opt/nifi/nifi-current/state
+            - ./nifi/nifi1/logs:/opt/nifi/nifi-current/logs
+            # uncomment the next line after copying the /conf directory from the container to your local directory to persist NiFi flows
+            - ./nifi/nifi1/conf:/opt/nifi/nifi-current/conf
+        networks:
+            - my_persistent_network
+    nifi2:
+        hostname: nifi2
+        container_name: nifi2
+        image: 'apache/nifi:latest'  # latest image as of 2021-11-09.
+        restart: on-failure
+        depends_on:
+            - zookeeper
+            - registry
+        ports:
+            - '8092:8080'
+        environment:
+            - NIFI_JVM_HEAP_INIT=1024m
+            - NIFI_JVM_HEAP_MAX=1024m
+            - TZ=Asia/Singapore
+            - NIFI_WEB_HTTP_PORT=8080
+            - NIFI.WEB.HTTP.HOST=localhost
+            - NIFI.CLUSTER.NODE.ADDRESS=localhost
+            - NIFI.REMOTE.INPUT.HOST=localhost
+            - NIFI_CLUSTER_IS_NODE=true
+            - NIFI_CLUSTER_NODE_PROTOCOL_PORT=8082
+            - NIFI_ZK_CONNECT_STRING=myzookeeper:2181
+            - NIFI_ELECTION_MAX_WAIT=30 sec
+            - NIFI_SENSITIVE_PROPS_KEY='12345678901234567890A'
+        healthcheck:
+            test: "${DOCKER_HEALTHCHECK_TEST:-curl localhost:8091/nifi/}"
+            interval: "60s"
+            timeout: "3s"
+            start_period: "5s"
+            retries: 5
+        volumes:
+            - ./nifi/nifi2/database_repository:/opt/nifi/nifi-current/database_repository
+            - ./nifi/nifi2/flowfile_repository:/opt/nifi/nifi-current/flowfile_repository
+            - ./nifi/nifi2/content_repository:/opt/nifi/nifi-current/content_repository
+            - ./nifi/nifi2/provenance_repository:/opt/nifi/nifi-current/provenance_repository
+            - ./nifi/nifi2/state:/opt/nifi/nifi-current/state
+            - ./nifi/nifi2/logs:/opt/nifi/nifi-current/logs
+            # uncomment the next line after copying the /conf directory from the container to your local directory to persist NiFi flows
+            - ./nifi/nifi2/conf:/opt/nifi/nifi-current/conf
+        networks:
+            - my_persistent_network
+    nifi3:
+        hostname: nifi3
+        container_name: nifi3
+        image: 'apache/nifi:latest'  # latest image as of 2021-11-09.
+        restart: on-failure
+        depends_on:
+            - zookeeper
+            - registry
+        ports:
+            - '8093:8080'
+        environment:
+            - NIFI_JVM_HEAP_INIT=1024m
+            - NIFI_JVM_HEAP_MAX=1024m
+            - TZ=Asia/Singapore
+            - NIFI_WEB_HTTP_PORT=8080
+            - NIFI.WEB.HTTP.HOST=localhost
+            - NIFI.CLUSTER.NODE.ADDRESS=localhost
+            - NIFI.REMOTE.INPUT.HOST=localhost
+            - NIFI_CLUSTER_IS_NODE=true
+            - NIFI_CLUSTER_NODE_PROTOCOL_PORT=8082
+            - NIFI_ZK_CONNECT_STRING=myzookeeper:2181
+            - NIFI_ELECTION_MAX_WAIT=30 sec
+            - NIFI_SENSITIVE_PROPS_KEY='12345678901234567890A'
+        healthcheck:
+            test: "${DOCKER_HEALTHCHECK_TEST:-curl localhost:8091/nifi/}"
+            interval: "60s"
+            timeout: "3s"
+            start_period: "5s"
+            retries: 5
+        volumes:
+            - ./nifi/nifi3/database_repository:/opt/nifi/nifi-current/database_repository
+            - ./nifi/nifi3/flowfile_repository:/opt/nifi/nifi-current/flowfile_repository
+            - ./nifi/nifi3/content_repository:/opt/nifi/nifi-current/content_repository
+            - ./nifi/nifi3/provenance_repository:/opt/nifi/nifi-current/provenance_repository
+            - ./nifi/nifi3/state:/opt/nifi/nifi-current/state
+            - ./nifi/nifi3/logs:/opt/nifi/nifi-current/logs
+            # uncomment the next line after copying the /conf directory from the container to your local directory to persist NiFi flows
+            - ./nifi/nifi3/conf:/opt/nifi/nifi-current/conf
+        networks:
+            - my_persistent_network
+networks:
+  my_persistent_network:
+    driver: bridge

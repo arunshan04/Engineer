@@ -68,7 +68,7 @@ services:
             - ./nifi/nifi1/state:/opt/nifi/nifi-current/state
             - ./nifi/nifi1/logs:/opt/nifi/nifi-current/logs
             # uncomment the next line after copying the /conf directory from the container to your local directory to persist NiFi flows
-            - ./nifi/nifi1/conf:/opt/nifi/nifi-current/conf
+            #- ./nifi/nifi1/conf:/opt/nifi/nifi-current/conf
         networks:
             - my_persistent_network
     nifi2:
@@ -108,7 +108,7 @@ services:
             - ./nifi/nifi2/state:/opt/nifi/nifi-current/state
             - ./nifi/nifi2/logs:/opt/nifi/nifi-current/logs
             # uncomment the next line after copying the /conf directory from the container to your local directory to persist NiFi flows
-            - ./nifi/nifi2/conf:/opt/nifi/nifi-current/conf
+            #- ./nifi/nifi2/conf:/opt/nifi/nifi-current/conf
         networks:
             - my_persistent_network
     nifi3:
@@ -148,7 +148,7 @@ services:
             - ./nifi/nifi3/state:/opt/nifi/nifi-current/state
             - ./nifi/nifi3/logs:/opt/nifi/nifi-current/logs
             # uncomment the next line after copying the /conf directory from the container to your local directory to persist NiFi flows
-            - ./nifi/nifi3/conf:/opt/nifi/nifi-current/conf
+            #- ./nifi/nifi3/conf:/opt/nifi/nifi-current/conf
         networks:
             - my_persistent_network
 networks:

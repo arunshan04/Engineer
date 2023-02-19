@@ -7,9 +7,9 @@ services:
     container_name: zookeeper
     ports:
       - "2181:2181"
-    volumes:
-      - ./zookeeperLog:/var/lib/zookeeper/log
-      - ./zkdata:/var/lib/zookeeper/data
+#    volumes:
+#      - ./zookeeperLog:/var/lib/zookeeper/log
+#      - ./zkdata:/var/lib/zookeeper/data
     environment:
       TZ: "Asia/Singapore"
       ZOOKEEPER_CLIENT_PORT: 2181
@@ -25,8 +25,8 @@ services:
       - "9092:9092"
       - "9101:9101"
       - "19092:19092"
-    volumes:
-      - ./kafka_cluster_data/broker0:/var/lib/kafka/data
+#    volumes:
+#      - ./kafka_cluster_data/broker0:/var/lib/kafka/data
     environment:
       TZ: "Asia/Singapore"
       KAFKA_BROKER_ID: 0
@@ -58,8 +58,8 @@ services:
       - "9093:9093"
       - "9102:9102"
       - "19093:19093"
-    volumes:
-      - ./kafka_cluster_data/broker1:/var/lib/kafka/data
+  #  volumes:
+  #    - ./kafka_cluster_data/broker1:/var/lib/kafka/data
     environment:
       TZ: "Asia/Singapore"
       KAFKA_BROKER_ID: 1
@@ -91,8 +91,8 @@ services:
       - "9094:9094"
       - "9103:9103"
       - "19094:19094"
-    volumes:
-      - ./kafka_cluster_data/broker2:/var/lib/kafka/data
+#    volumes:
+#      - ./kafka_cluster_data/broker2:/var/lib/kafka/data
     environment:
       TZ: "Asia/Singapore"
       KAFKA_BROKER_ID: 2
@@ -143,7 +143,7 @@ services:
       - "8083:8083"
     volumes:
       - ./confluent-hub-components:/usr/share/confluent-hub-components
-      - ./java:/usr/share/java
+#      - ./java:/usr/share/java
     environment:
       TZ: "Asia/Singapore"
       CONNECT_BOOTSTRAP_SERVERS: 'broker0:19092,broker1:19093,broker2:19094'
@@ -277,6 +277,5 @@ services:
       KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
 
 networks:
-  default:
-    external: true
-    name: myNetwork
+  my_persistent_network:
+    driver: bridge
